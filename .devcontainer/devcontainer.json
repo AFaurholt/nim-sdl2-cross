@@ -1,0 +1,11 @@
+{
+    "name": "Nim-SDL2-Cross",
+    "image": "nim_sdl:2"
+    ,"customizations": {
+        "vscode": {
+            "extensions": [
+				"nimsaem.nimvscode"
+			]
+        }
+    }
+}

@@ -1,6 +1,6 @@
 {
     "name": "Nim-SDL2-Cross",
-    "image": "nim_sdl:2"
+    "image": "nim_sdl:latest"
     ,"customizations": {
         "vscode": {
             "extensions": [

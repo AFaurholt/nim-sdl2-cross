@@ -1,4 +1,4 @@
-FROM ubuntu:latest
+FROM debian:latest AS nimbuild
 
 RUN apt-get update; \
     apt-get install -y wget xz-utils g++; \
@@ -30,6 +30,8 @@ ENV PATH=/root/.nimble/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sb
 RUN nim --version
 RUN nimble --version
 
+FROM nimbuild
+
 #https://dev.to/setevoy/docker-configure-tzdata-and-timezone-during-build-20bk
 ENV TZ=Etc/UTC
 RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
@@ -58,6 +60,20 @@ RUN apt-get install -y python3-pip git-core unzip zip curl bash
 RUN nimble refresh
 RUN nimble install nimble@#HEAD
 #RUN nimble install nimlangserver@#latest
+RUN apt install make libreadline-dev libghc-bzlib-dev libz-dev libbz2-dev autoconf bzip2 -y
+RUN cd /opt && mkdir pcre && cd pcre && git clone https://github.com/luvit/pcre.git . \
+    && ./configure --prefix=/usr              \
+            --docdir=/usr/share/doc/pcre-8.45 \
+            --enable-unicode-properties       \
+            --enable-pcre16                   \
+            --enable-pcre32                   \
+            --enable-pcregrep-libz            \
+            --enable-pcregrep-libbz2          \
+            --enable-pcretest-libreadline     \
+            --disable-static                  \
+    && make \
+    && make install 
+RUN cd /opt && rm -r -f pcre
 RUN wget https://github.com/nim-lang/langserver/releases/download/latest/nimlangserver-linux-amd64.tar.gz \
     && tar -xvzf /nimlangserver-linux-amd64.tar.gz -C /root/.nimble/bin/ \
     && rm /nimlangserver-linux-amd64.tar.gz \

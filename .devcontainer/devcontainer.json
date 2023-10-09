@@ -1,11 +1,12 @@
 {
-    "name": "Nim-SDL2-Cross",
-    "image": "nim_sdl:latest"
-    ,"customizations": {
-        "vscode": {
-            "extensions": [
-				"nimsaem.nimvscode"
-			]
-        }
+  "name": "Nim-SDL2-Cross",
+  "image": "nimsdl:2",
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "nimsaem.nimvscode",
+        "ms-azuretools.vscode-docker"
+      ]
     }
+  }
 }

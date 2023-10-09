@@ -1,14 +1,37 @@
+import std/math
 import sdl2
+import sdl2/image
 
 type
   SDLException = object of Defect
-  WindowPtrScopeWrapper = object
+  WindowPtrWrapper = object
     x*: WindowPtr
+  RendererPtrWrapper = object
+    x*: RendererPtr
+  TexturePtrWrapper = object
+    x*: TexturePtr
 
-proc `=destroy`(x: WindowPtrScopeWrapper) =
+
+proc `=destroy`(x: WindowPtrWrapper) =
   if x.x != nil:
-    debugEcho("Destroying window")
     x.x.destroy()
+
+proc `=destroy`(x: RendererPtrWrapper) =
+  if x.x != nil:
+    x.x.destroy()
+
+proc `=destroy`(x: TexturePtrWrapper) =
+  if x.x != nil:
+    x.x.destroy()
+
+proc clearRender(renderer: RendererPtr) =
+  renderer.setDrawColor(200, 200, 200)
+  renderer.clear()
+
+proc blit(renderer: RendererPtr, texture: TexturePtr, x, y: cint, angle: cdouble) =
+  let rect: Rect = (x: x, y: y, w: 32, h: 32)
+  texture.queryTexture(nil, nil, rect.w.addr, rect.h.addr)
+  renderer.copyEx(texture, nil, rect.addr, angle, nil)
 
 template sdlFailIf(condition: typed, reason: string) =
   if condition: raise SDLException.newException(
@@ -29,35 +52,88 @@ proc main*() =
   const SCREEN_W = 640
   const SCREEN_H = 480
   const INIT_BITS = INIT_VIDEO or INIT_TIMER or INIT_EVENTS
+  const REND_FLAGS = Renderer_Accelerated
   const GAME_TITLE = "Foo"
   const WINDOW_FLAGS = SDL_WINDOW_SHOWN
 
   #Init
   try:
-    debugEcho("Outer")
     sdlFailIf(not sdl2.init(INIT_BITS)): "SDL2 init failed"
 
     #Window
-    let window = WindowPtrScopeWrapper(x: createWindow(
+    let window = WindowPtrWrapper(x: createWindow(
         title = GAME_TITLE,
         x = SDL_WINDOWPOS_CENTERED,
         y = SDL_WINDOWPOS_CENTERED,
         w = SCREEN_W,
         h = SCREEN_H,
         flags = WINDOW_FLAGS
+    ))
+    sdlFailIf(window.x == nil, "Window init failed")
+    sdlFailIf(not sdl2.setHint(HINT_RENDER_SCALE_QUALITY, "linear"), "Set hint scale qual fail")
+    let renderer = RendererPtrWrapper(x: createRenderer(
+      window = window.x,
+      index = -1,
+      flags = REND_FLAGS
+    ))
+    sdlFailIf(renderer.x == nil, "Rend init failed")
+
+    try:
+      sdlFailIf(image.init() == 0, "Image init failed")
+
+      let texture = TexturePtrWrapper(x: loadTexture(
+        renderer = renderer.x,
+        "./kenney_pixel-shmup/Ships/ship_0012.png"
       ))
-    debugEcho("Inner")
-    let surface = window.x.getSurface()
-    debugEcho(surface != nil)
-    sdlFailIf(window.x != nil, "window no good")
+      sdlFailIf(texture.x == nil, "Failed texture load")
 
-    assert false
+      var isRunning = true
+      var x,y: cint = 0
+      var angle: cdouble = 0
+      var angleFlag = false
+      var currentTime = getTicks()
+      var accumulator = 0.00
+      var dt = 0.01
+      while isRunning:
+        var event = defaultEvent
+        while pollEvent(event):
+          case event.kind
+          of QuitEvent:
+            isRunning = false
+            break
+          of KeyDown:
+            #x = (x + 2) mod 20
+            #y = (y + 2) mod 20
+            angleFlag = true
+          of KeyUp:
+            angleFlag = false
+          else:
+            discard
 
-    debugEcho("Inner final")
+        let newTime = getTicks()
+        var frameDelta = newTime - currentTime
+        currentTime = newTime
+        accumulator += (float)frameDelta
+        debugEcho(accumulator)
+
+        while accumulator >= dt:
+          if angleFlag: 
+            let rotSpeed = 1.00 * dt * 0.06
+            angle = (angle + rotSpeed) mod 360
+          
+          accumulator -= dt
+
+        renderer.x.clearRender()
+        renderer.x.blit(texture.x, x, y, angle)
+        renderer.x.present()
+
+
+    finally:
+      image.quit()
   except AssertionDefect:
     prExcept()
   except SDLException:
     prExcept()
   finally:
-    debugEcho("Outer final")
+    debugEcho("Bye")
     sdl2.quit()

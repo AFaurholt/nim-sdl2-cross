@@ -11,7 +11,6 @@ type
   TexturePtrWrapper = object
     x*: TexturePtr
 
-
 proc `=destroy`(x: WindowPtrWrapper) =
   if x.x != nil:
     x.x.destroy()
@@ -55,6 +54,7 @@ proc main*() =
   const REND_FLAGS = Renderer_Accelerated
   const GAME_TITLE = "Foo"
   const WINDOW_FLAGS = SDL_WINDOW_SHOWN
+  const TIME_STEP = 60
 
   #Init
   try:
@@ -93,7 +93,6 @@ proc main*() =
       var angleFlag = false
       var currentTime = getTicks()
       var accumulator = 0.00
-      var dt = 0.01
       while isRunning:
         var event = defaultEvent
         while pollEvent(event):
@@ -116,12 +115,13 @@ proc main*() =
         accumulator += (float)frameDelta
         debugEcho(accumulator)
 
-        while accumulator >= dt:
+        while accumulator >= TIME_STEP:
+          debugEcho("Logic")
           if angleFlag: 
-            let rotSpeed = 1.00 * dt * 0.06
+            let rotSpeed = 1.00 * TIME_STEP
             angle = (angle + rotSpeed) mod 360
           
-          accumulator -= dt
+          accumulator -= TIME_STEP
 
         renderer.x.clearRender()
         renderer.x.blit(texture.x, x, y, angle)

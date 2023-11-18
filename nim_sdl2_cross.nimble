@@ -47,6 +47,10 @@ task getsdl, "wget sdl stuff and unzip":
   exec "unzip -o " & binDir & "/zip1 -d " & binDir
   exec "rm " & binDir & "/zip1"
 
+  exec "wget -O " & binDir & "/zip1 https://github.com/libsdl-org/" & url & "/releases/download/release-" & ver & "/" & name & "-" & ver & ".tar.gz"
+  exec "tar -xzf " & binDir & "/zip1 -C " & binDir
+  exec "rm " & binDir & "/zip1"
+
   url = "SDL"
   name = "SDL2"
   ver = verSdl
@@ -54,11 +58,19 @@ task getsdl, "wget sdl stuff and unzip":
   exec "unzip -o " & binDir & "/zip1 -d " & binDir
   exec "rm " & binDir & "/zip1"
 
+  exec "wget -O " & binDir & "/zip1 https://github.com/libsdl-org/" & url & "/releases/download/release-" & ver & "/" & name & "-" & ver & ".tar.gz"
+  exec "tar -xzf " & binDir & "/zip1 -C " & binDir
+  exec "rm " & binDir & "/zip1"
+
   url = "SDL_image"
   name = "SDL2_image"
   ver = verImage
   exec "wget -O " & binDir & "/zip1 https://github.com/libsdl-org/" & url & "/releases/download/release-" & ver & "/" & name & "-" & ver & "-win32-x64.zip"
   exec "unzip -o " & binDir & "/zip1 -d " & binDir
+  exec "rm " & binDir & "/zip1"
+
+  exec "wget -O " & binDir & "/zip1 https://github.com/libsdl-org/" & url & "/releases/download/release-" & ver & "/" & name & "-" & ver & ".tar.gz"
+  exec "tar -xzf " & binDir & "/zip1 -C " & binDir
   exec "rm " & binDir & "/zip1"
 
 task buildw, "Build for windows":

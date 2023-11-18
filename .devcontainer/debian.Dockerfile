@@ -4,7 +4,7 @@ RUN apt-get update; \
     apt-get install -y wget xz-utils g++; \
     wget -qO- https://deb.nodesource.com/setup_13.x | bash -; \
     apt-get install -y nodejs 
-    # buildkit
+    # buildkits
 
 RUN wget https://nim-lang.org/download/nim-2.0.0.tar.xz; \
     tar xf nim-2.0.0.tar.xz; rm nim-2.0.0.tar.xz; \
@@ -12,10 +12,10 @@ RUN wget https://nim-lang.org/download/nim-2.0.0.tar.xz; \
     cd nim; sh build.sh; \
     rm -r c_code tests; \
     ln -s `pwd`/bin/nim /bin/nim 
-    # buildkit
+    # buildkits
 
 RUN apt-get install -y git mercurial libssl-dev glibc-source
-    # buildkit
+    # buildkits
 
 RUN cd nim; \
     nim c koch; \
@@ -23,7 +23,7 @@ RUN cd nim; \
     ln -s `pwd`/bin/nimble /bin/nimble; \
     ln -s `pwd`/bin/nimsuggest /bin/nimsuggest; \
     ln -s `pwd`/bin/testament /bin/testament 
-    # buildkit
+    # buildkits
 
 ENV PATH=/root/.nimble/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
 

@@ -1,4 +1,4 @@
 {
   "nim.provider": "lsp",
-  "nim.enableNimsuggest": false
+  "nim.enableNimsuggest": true
 }

@@ -83,7 +83,7 @@ proc main*() =
 
       let texture = TexturePtrWrapper(x: loadTexture(
         renderer = renderer.x,
-        "./kenney_pixel-shmup/Ships/ship_0012.png"
+        "./PNG/Colored/genericItem_color_116.ng"
       ))
       sdlFailIf(texture.x == nil, "Failed texture load")
 
@@ -135,5 +135,5 @@ proc main*() =
   except SDLException:
     prExcept()
   finally:
-    debugEcho("Bye")
+    debugEcho("Bye\u2764\u2764")
     sdl2.quit()
